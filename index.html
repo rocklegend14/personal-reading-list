@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    --paper: #F5F3EC;
+    --paper-alt: #ECE7D8;
+    --ink: #232A2E;
+    --ink-soft: #565F5A;
+    --muted: #8B8677;
+    --accent: #AE4430;
+    --accent-ink: #FBF6EE;
+    --success: #3C6E47;
+    --success-bg: #E4EDE2;
+    --line: #D6CFBA;
+    --danger-bg: #F6E4DE;
+    --danger-text: #8A3220;
+    --shadow: rgba(35, 26, 16, 0.08);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #15181A;
+      --paper-alt: #1D2124;
+      --ink: #EBE6DA;
+      --ink-soft: #B7BDB6;
+      --muted: #82897F;
+      --accent: #6fe05b;
+      --accent-ink: #1B1310;
+      --success: #7AAE84;
+      --success-bg: #1E2A20;
+      --line: #30353649;
+      --danger-bg: #33201B;
+      --danger-text: #F0AA97;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #15181A;
+    --paper-alt: #1D2124;
+    --ink: #EBE6DA;
+    --ink-soft: #B7BDB6;
+    --muted: #82897F;
+    --accent: #E0876A;
+    --accent-ink: #1B1310;
+    --success: #7AAE84;
+    --success-bg: #1E2A20;
+    --line: #303536;
+    --danger-bg: #33201B;
+    --danger-text: #F0AA97;
+    --shadow: rgba(0, 0, 0, 0.35);
+  }
+
+  html, body { height: 100%; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 56px 24px 140px;
+  }
+
+  h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; margin: 0; }
+
+  .hero { margin-bottom: 40px; }
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 42px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .hero p {
+    margin: 12px 0 0;
+    color: var(--ink-soft);
+    font-size: 16px;
+    max-width: 46ch;
+  }
+
+  /* ---- Composer ---- */
+  .composer {
+    background: var(--paper-alt);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 32px;
+  }
+  .composer h2 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: var(--ink);
+  }
+  .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .field { flex: 1 1 160px; display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12.5px; color: var(--ink-soft); }
+  .field input {
+    font: inherit;
+    font-size: 15px;
+    padding: 9px 11px;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+  }
+  .field input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .composer-footer { display: flex; align-items: center; gap: 12px; justify-content: flex-end; }
+  .field-error { font-size: 13px; color: var(--danger-text); margin-right: auto; }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 16px;
+    font-size: 14.5px;
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--accent-ink);
+    transition: opacity .15s ease, transform .1s ease;
+  }
+  .btn:hover { opacity: .92; }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled { opacity: .6; cursor: default; }
+  .btn.secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn.secondary:hover { background: var(--paper); }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    animation: spin .7s linear infinite;
+    flex: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #banner { margin-bottom: 18px; }
+  .banner {
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    animation: fadein .15s ease;
+  }
+  @keyframes fadein { from { opacity: 0; transform: translateY(-4px);} to { opacity:1; transform:none; } }
+  .banner.error { background: var(--danger-bg); color: var(--danger-text); }
+  .banner.success { background: var(--success-bg); color: var(--success); }
+  .banner button {
+    margin-left: auto;
+    background: none; border: none; color: inherit;
+    font-size: 13px; text-decoration: underline; padding: 0;
+  }
+
+  #listArea { min-height: 160px; }
+
+  .state-heading {
+    font-size: 12.5px;
+    text-transform: none;
+    letter-spacing: .02em;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+
+  .skeleton-row {
+    height: 64px;
+    border-radius: 8px;
+    background: linear-gradient(100deg, var(--paper-alt) 30%, var(--line) 45%, var(--paper-alt) 60%);
+    background-size: 300% 100%;
+    animation: shimmer 1.3s ease-in-out infinite;
+    margin-bottom: 10px;
+  }
+  @keyframes shimmer { 0% { background-position: 120% 0; } 100% { background-position: -20% 0; } }
+  .loading-caption {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--ink-soft); font-size: 14px; margin-bottom: 16px;
+  }
+
+  .error-state {
+    border: 1px solid var(--danger-bg);
+    background: var(--danger-bg);
+    border-radius: 10px;
+    padding: 26px 22px;
+    text-align: left;
+  }
+  .error-state h2 { font-size: 19px; color: var(--danger-text); margin-bottom: 8px; }
+  .error-state p { color: var(--danger-text); font-size: 14.5px; margin: 0 0 16px; opacity: .92; }
+  .error-state .btn { background: var(--danger-text); color: var(--danger-bg); }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px 36px;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+  }
+  .empty-state svg { margin-bottom: 18px; color: var(--muted); }
+  .empty-state h2 { font-size: 21px; margin-bottom: 8px; }
+  .empty-state p {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    max-width: 38ch;
+    margin: 0 auto 20px;
+  }
+
+  ul.entries { list-style: none; margin: 0; padding: 0; }
+  .entry {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .entry:first-child { border-top: 1px solid var(--line); }
+  .entry-bar { width: 3px; align-self: stretch; background: var(--accent); border-radius: 2px; flex: none; }
+  .entry-body { flex: 1; min-width: 0; }
+  .entry-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 500; }
+  .entry-title a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--line); }
+  .entry-title a:hover { border-bottom-color: var(--accent); }
+  .entry-meta { font-size: 13px; color: var(--muted); margin-top: 3px; }
+  .entry-remove {
+    flex: none;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+  }
+  .entry-remove:hover { border-color: var(--line); color: var(--danger-text); background: var(--paper-alt); }
+  .entry-remove:disabled { opacity: .5; }
+
+  .list-caption {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 12px;
+  }
+  .list-caption .count { font-size: 13px; color: var(--muted); }
+
+  .review-tools {
+    position: fixed;
+    right: 18px;
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    z-index: 20;
+    font-size: 13.5px;
+  }
+  .review-toggle {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-weight: 600;
+    box-shadow: 0 6px 18px var(--shadow);
+  }
+  .review-panel {
+    position: absolute;
+    right: 0;
+    bottom: 52px;
+    width: 268px;
+    max-width: calc(100vw - 36px);
+    background: var(--paper-alt);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 12px 30px var(--shadow);
+    display: none;
+  }
+  .review-panel.open { display: block; }
+  .review-panel h3 { font-size: 14px; margin-bottom: 4px; }
+  .review-panel .hint { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .review-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0;
+    border-top: 1px solid var(--line);
+    gap: 10px;
+  }
+  .review-row:first-of-type { border-top: none; }
+  .review-row span { font-size: 13px; color: var(--ink); }
+  .switch {
+    position: relative; width: 36px; height: 21px; flex: none;
+  }
+  .switch input { opacity: 0; width: 100%; height: 100%; margin: 0; position: absolute; cursor: pointer; }
+  .switch .track {
+    position: absolute; inset: 0; background: var(--line); border-radius: 999px; transition: background .15s;
+  }
+  .switch .thumb {
+    position: absolute; top: 2px; left: 2px; width: 17px; height: 17px; border-radius: 50%;
+    background: var(--paper); transition: transform .15s; box-shadow: 0 1px 2px var(--shadow);
+  }
+  .switch input:checked + .track { background: var(--accent); }
+  .switch input:checked + .track + .thumb { transform: translateX(15px); }
+  .review-action {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 8px 0;
+    border-top: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 13px;
+  }
+  .review-action:hover { color: var(--accent); }
+  .review-status { font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+
+  @media (max-width: 480px) {
+    .page { padding: 40px 18px 150px; }
+    .field-row { flex-direction: column; }
+  }
+
+  [data-wide-scroll] { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="hero">
+    <h1>Your reading list</h1>
+    <p>Save the articles, books, and links you want to get back to and clear them off once you have.</p>
+  </header>
+
+  <section class="composer" aria-label="Add to your list">
+    <h2>Add something</h2>
+    <form id="addForm">
+      <div class="field-row">
+        <div class="field">
+          <label for="titleInput">Title <span aria-hidden="true">*</span></label>
+          <input id="titleInput" name="title" type="text" placeholder="e.g. The Alchemist" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="authorInput">Author or source</label>
+          <input id="authorInput" name="author" type="text" placeholder="e.g. Paulo Coelho" autocomplete="off">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="urlInput">Link (optional)</label>
+          <input id="urlInput" name="url" type="text" placeholder="https://…" autocomplete="off">
+        </div>
+      </div>
+      <div class="composer-footer">
+        <span class="field-error" id="formError" hidden></span>
+        <button class="btn" id="addBtn" type="submit">
+          <span id="addBtnLabel">Add to list</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <div id="banner" aria-live="polite"></div>
+
+  <main id="listArea" aria-live="polite"></main>
+</div>
+
+<div class="review-tools">
+  <div class="review-panel" id="reviewPanel">
+    <h3>Review tools</h3>
+    <p class="hint">Use these to reach every state without touching code.</p>
+
+    <div class="review-row">
+      <span>Simulate network error</span>
+      <label class="switch">
+        <input type="checkbox" id="toggleError">
+        <span class="track"></span>
+        <span class="thumb"></span>
+      </label>
+    </div>
+    <div class="review-row">
+      <span>Simulate slow connection</span>
+      <label class="switch">
+        <input type="checkbox" id="toggleSlow">
+        <span class="track"></span>
+        <span class="thumb"></span>
+      </label>
+    </div>
+    <button class="review-action" id="reloadBtn" type="button">Reload list (see loading)</button>
+    <button class="review-action" id="emptyBtn" type="button">Empty the list (see empty state)</button>
+    <button class="review-action" id="seedBtn" type="button">Add 3 sample entries</button>
+    <p class="review-status" id="reviewStatus">All simulations off using local storage normally.</p>
+  </div>
+  <button class="review-toggle" id="reviewToggle" type="button" aria-expanded="false" aria-controls="reviewPanel">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    Review tools
+  </button>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "reading-list:v1:items";
+  var listArea = document.getElementById("listArea");
+  var banner = document.getElementById("banner");
+
+  var settings = { forceError: false, slow: false };
+
+
+  function wait(ms) { return new Promise(function (res) { setTimeout(res, ms); }); }
+  function currentDelay() { return settings.slow ? 2200 : 550; }
+
+  function readRaw() {
+    var raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch (e) { return []; }
+  }
+  function writeRaw(items) {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }
+
+  function maybeThrow(action) {
+    if (settings.forceError) {
+      var err = new Error("The connection to your reading list timed out while trying to " + action + " (simulated failure turn off \u201CSimulate network error\u201D in Review tools to stop this).");
+      err.simulated = true;
+      throw err;
+    }
+  }
+
+  var api = {
+    list: function () {
+      return wait(currentDelay()).then(function () {
+        maybeThrow("load your list");
+        try {
+          return readRaw();
+        } catch (e) {
+          throw new Error("Local storage couldn\u2019t be read (" + e.message + "). Your browser may be blocking storage in this view.");
+        }
+      });
+    },
+    add: function (entry) {
+      return wait(currentDelay()).then(function () {
+        maybeThrow("add \u201C" + entry.title + "\u201D");
+        var items = readRaw();
+        items.unshift(entry);
+        writeRaw(items);
+        return items;
+      });
+    },
+    remove: function (id) {
+      return wait(currentDelay()).then(function () {
+        maybeThrow("remove that entry");
+        var items = readRaw().filter(function (i) { return i.id !== id; });
+        writeRaw(items);
+        return items;
+      });
+    }
+  };
+
+  function escapeHtml(str) {
+    var d = document.createElement("div");
+    d.textContent = str == null ? "" : str;
+    return d.innerHTML;
+  }
+
+  function normalizeUrl(u) {
+    if (!u) return null;
+    var trimmed = u.trim();
+    if (!trimmed) return null;
+    if (!/^https?:\/\//i.test(trimmed)) trimmed = "https://" + trimmed;
+    return trimmed;
+  }
+
+  function formatDate(iso) {
+    try {
+      return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    } catch (e) { return ""; }
+  }
+
+  function renderLoading() {
+    listArea.innerHTML =
+      '<div class="loading-caption"><span class="spinner" aria-hidden="true"></span> Loading your reading list\u2026</div>' +
+      '<div class="skeleton-row" style="animation-delay:0s"></div>' +
+      '<div class="skeleton-row" style="animation-delay:.12s"></div>' +
+      '<div class="skeleton-row" style="animation-delay:.24s"></div>';
+  }
+
+  function renderError(message, onRetry) {
+    listArea.innerHTML =
+      '<div class="error-state">' +
+      '<h2>Your list didn\u2019t load</h2>' +
+      '<p id="errorMessage"></p>' +
+      '<button class="btn" id="retryBtn" type="button">Try again</button>' +
+      '</div>';
+    document.getElementById("errorMessage").textContent = message;
+    document.getElementById("retryBtn").addEventListener("click", onRetry);
+  }
+
+  function renderEmpty() {
+    listArea.innerHTML =
+      '<div class="empty-state">' +
+      '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>' +
+      '<h2>Nothing on your list yet</h2>' +
+      '<p>This is where you\u2019ll keep the books and articles you want to come back to. Add the first one above, or use the button below.</p>' +
+      '<button class="btn" id="emptyStateAdd" type="button">Add your first book</button>' +
+      '</div>';
+    document.getElementById("emptyStateAdd").addEventListener("click", function () {
+      document.getElementById("titleInput").focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  function renderList(items) {
+    var rows = items.map(function (item) {
+      var url = normalizeUrl(item.url);
+      var titleHtml = url
+        ? '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(item.title) + "</a>"
+        : escapeHtml(item.title);
+      var metaParts = [];
+      if (item.author) metaParts.push(escapeHtml(item.author));
+      metaParts.push("added " + formatDate(item.addedAt));
+      return (
+        '<li class="entry" data-id="' + item.id + '">' +
+        '<div class="entry-bar" aria-hidden="true"></div>' +
+        '<div class="entry-body">' +
+        '<div class="entry-title">' + titleHtml + "</div>" +
+        '<div class="entry-meta">' + metaParts.join(" \u00B7 ") + "</div>" +
+        "</div>" +
+        '<button class="entry-remove" type="button" aria-label="Remove ' + escapeHtml(item.title) + '">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>' +
+        "</button>" +
+        "</li>"
+      );
+    }).join("");
+
+    listArea.innerHTML =
+      '<div class="list-caption"><h2 class="state-heading" style="margin:0;">On your list</h2><span class="count">' +
+      items.length + (items.length === 1 ? " item" : " items") + "</span></div>" +
+      '<ul class="entries">' + rows + "</ul>";
+
+    listArea.querySelectorAll(".entry-remove").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var li = btn.closest(".entry");
+        var id = li.getAttribute("data-id");
+        var item = items.find(function (i) { return i.id === id; });
+        handleRemove(id, item, btn, li);
+      });
+    });
+  }
+
+  function showBanner(kind, message) {
+    banner.innerHTML =
+      '<div class="banner ' + kind + '" role="status">' +
+      "<span>" + escapeHtml(message) + "</span>" +
+      '<button type="button" id="bannerDismiss">Dismiss</button>' +
+      "</div>";
+    document.getElementById("bannerDismiss").addEventListener("click", function () { banner.innerHTML = ""; });
+    if (kind === "success") {
+      setTimeout(function () { if (banner.querySelector(".success")) banner.innerHTML = ""; }, 3500);
+    }
+  }
+
+  var lastItems = [];
+
+  function loadList() {
+    renderLoading();
+    return api.list().then(function (items) {
+      lastItems = items;
+      if (items.length === 0) renderEmpty(); else renderList(items);
+    }).catch(function (err) {
+      renderError(err.message, loadList);
+    });
+  }
+
+  function handleAdd(entry) {
+    var addBtn = document.getElementById("addBtn");
+    var addBtnLabel = document.getElementById("addBtnLabel");
+    addBtn.disabled = true;
+    addBtnLabel.innerHTML = '<span class="spinner" aria-hidden="true"></span> Adding\u2026';
+
+    return api.add(entry).then(function (items) {
+      lastItems = items;
+      renderList(items);
+      document.getElementById("addForm").reset();
+      showBanner("success", "\u201C" + entry.title + "\u201D was added to your list.");
+    }).catch(function (err) {
+      showBanner("error", err.message);
+    }).finally(function () {
+      addBtn.disabled = false;
+      addBtnLabel.textContent = "Add to list";
+    });
+  }
+
+  function handleRemove(id, item, btn, li) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span>';
+    api.remove(id).then(function (items) {
+      lastItems = items;
+      if (items.length === 0) renderEmpty(); else renderList(items);
+      showBanner("success", "Removed \u201C" + (item ? item.title : "that item") + "\u201D from your list.");
+    }).catch(function (err) {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>';
+      showBanner("error", err.message);
+    });
+  }
+
+  document.getElementById("addForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var titleInput = document.getElementById("titleInput");
+    var authorInput = document.getElementById("authorInput");
+    var urlInput = document.getElementById("urlInput");
+    var formError = document.getElementById("formError");
+
+    var title = titleInput.value.trim();
+    if (!title) {
+      formError.hidden = false;
+      formError.textContent = "Give it a title before adding it.";
+      titleInput.focus();
+      return;
+    }
+    formError.hidden = true;
+
+    handleAdd({
+      id: (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)),
+      title: title,
+      author: authorInput.value.trim(),
+      url: urlInput.value.trim(),
+      addedAt: new Date().toISOString()
+    });
+  });
+
+  var reviewToggle = document.getElementById("reviewToggle");
+  var reviewPanel = document.getElementById("reviewPanel");
+  var reviewStatus = document.getElementById("reviewStatus");
+
+  reviewToggle.addEventListener("click", function () {
+    var open = reviewPanel.classList.toggle("open");
+    reviewToggle.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  function updateReviewStatus() {
+    var parts = [];
+    if (settings.forceError) parts.push("errors on");
+    if (settings.slow) parts.push("slow connection on");
+    reviewStatus.textContent = parts.length
+      ? "Active: " + parts.join(", ") + "."
+      : "All simulations off — using local storage normally.";
+  }
+
+  document.getElementById("toggleError").addEventListener("change", function (e) {
+    settings.forceError = e.target.checked;
+    updateReviewStatus();
+  });
+  document.getElementById("toggleSlow").addEventListener("change", function (e) {
+    settings.slow = e.target.checked;
+    updateReviewStatus();
+  });
+  document.getElementById("reloadBtn").addEventListener("click", function () { loadList(); });
+  document.getElementById("emptyBtn").addEventListener("click", function () {
+    try { writeRaw([]); } catch (e) {}
+    loadList();
+  });
+  document.getElementById("seedBtn").addEventListener("click", function () {
+    var samples = [
+      { id: "s1_" + Date.now(), title: "The Overstory", author: "Richard Powers", url: "", addedAt: new Date().toISOString() },
+      { id: "s2_" + Date.now(), title: "The New Yorker \u2014 \u201CThe Mushroom Hunters\u201D", author: "", url: "newyorker.com", addedAt: new Date().toISOString() },
+      { id: "s3_" + Date.now(), title: "Consider This", author: "Chuck Palahniuk", url: "", addedAt: new Date().toISOString() }
+    ];
+    try {
+      var current = readRaw();
+      writeRaw(samples.concat(current));
+    } catch (e) {}
+    loadList();
+  });
+
+  loadList();
+})();
+</script>
+</body>
+</html>
